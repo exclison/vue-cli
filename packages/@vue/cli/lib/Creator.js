@@ -1,9 +1,9 @@
 const path = require('path')
 const debug = require('debug')
-const inquirer = require('inquirer')
-const EventEmitter = require('events')
+const inquirer = require('inquirer')//命令行交互
+const EventEmitter = require('events')//nodejs 的事件
 const Generator = require('./Generator')
-const cloneDeep = require('lodash.clonedeep')
+const cloneDeep = require('lodash.clonedeep')//lodash库 深拷贝
 const sortObject = require('./util/sortObject')
 const getVersions = require('./util/getVersions')
 const PackageManager = require('./util/ProjectPackageManager')
@@ -47,14 +47,16 @@ const isManualMode = answers => answers.preset === '__manual__'
 
 module.exports = class Creator extends EventEmitter {
   constructor (name, context, promptModules) {
+    //name 项目名   context 项目路径   promptModules 需要安装的模块配置
     super()
 
     this.name = name
     this.context = process.env.VUE_CLI_CONTEXT = context
+    //获取默认或缓存配置提示(vue版本)
     const { presetPrompt, featurePrompt } = this.resolveIntroPrompts()
 
-    this.presetPrompt = presetPrompt
-    this.featurePrompt = featurePrompt
+    this.presetPrompt = presetPrompt//预设提示
+    this.featurePrompt = featurePrompt//功能提示
     this.outroPrompts = this.resolveOutroPrompts()
     this.injectedPrompts = []
     this.promptCompleteCbs = []
@@ -399,14 +401,17 @@ module.exports = class Creator extends EventEmitter {
     }
     return plugins
   }
-
+  //获取预设配置
   getPresets () {
-    const savedOptions = loadOptions()
+    const savedOptions = loadOptions()//本地缓存的配置
+    //合并本地缓存的配置和默认配置
     return Object.assign({}, savedOptions.presets, defaults.presets)
   }
-
+  //加载介绍提示
   resolveIntroPrompts () {
+    //获取预设配置
     const presets = this.getPresets()
+    //获取预设的选择项
     const presetChoices = Object.entries(presets).map(([name, preset]) => {
       let displayName = name
       if (name === 'default') {
@@ -420,23 +425,25 @@ module.exports = class Creator extends EventEmitter {
         value: name
       }
     })
+    //预设提示
     const presetPrompt = {
       name: 'preset',
       type: 'list',
       message: `Please pick a preset:`,
       choices: [
-        ...presetChoices,
+        ...presetChoices,//上边获取的配置选择项
         {
-          name: 'Manually select features',
+          name: 'Manually select features',//手动选择功能
           value: '__manual__'
         }
       ]
     }
+    //功能提示
     const featurePrompt = {
       name: 'features',
-      when: isManualMode,
+      when: isManualMode,//当手册模式的时候
       type: 'checkbox',
-      message: 'Check the features needed for your project:',
+      message: 'Check the features needed for your project:',//选择项目所需的功能
       choices: [],
       pageSize: 10
     }

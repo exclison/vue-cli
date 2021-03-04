@@ -3,7 +3,7 @@
 // Check node version before requiring/doing anything else
 // The user may be on a very old node version
 
-const { chalk, semver } = require('@vue/cli-shared-utils')
+const { chalk, semver } = require('@vue/cli-shared-utils')//chalk设置输出命令行颜色的 semver用于测试版本号是否合法
 const requiredVersion = require('../package.json').engines.node
 const leven = require('leven')
 
@@ -21,8 +21,8 @@ checkNodeVersion(requiredVersion, '@vue/cli')
 
 const fs = require('fs')
 const path = require('path')
-const slash = require('slash')
-const minimist = require('minimist')
+const slash = require('slash')//将Windows反斜杠路径转换为斜杠路径：foo\\bar➔foo/bar
+const minimist = require('minimist')//从命令行解析参数选项
 
 // enter debug mode when creating test repo
 if (
@@ -34,7 +34,7 @@ if (
   process.env.VUE_CLI_DEBUG = true
 }
 
-const program = require('commander')
+const program = require('commander') //命令行工具
 const loadCommand = require('../lib/util/loadCommand')
 
 program
@@ -43,28 +43,47 @@ program
 
 program
   .command('create <app-name>')
-  .description('create a new project powered by vue-cli-service')
-  .option('-p, --preset <presetName>', 'Skip prompts and use saved or remote preset')
-  .option('-d, --default', 'Skip prompts and use default preset')
-  .option('-i, --inlinePreset <json>', 'Skip prompts and use inline JSON string as preset')
-  .option('-m, --packageManager <command>', 'Use specified npm client when installing dependencies')
-  .option('-r, --registry <url>', 'Use specified npm registry when installing dependencies (only for npm)')
-  .option('-g, --git [message]', 'Force git initialization with initial commit message')
-  .option('-n, --no-git', 'Skip git initialization')
-  .option('-f, --force', 'Overwrite target directory if it exists')
-  .option('--merge', 'Merge target directory if it exists')
-  .option('-c, --clone', 'Use git clone when fetching remote preset')
-  .option('-x, --proxy <proxyUrl>', 'Use specified proxy when creating project')
-  .option('-b, --bare', 'Scaffold project without beginner instructions')
-  .option('--skipGetStarted', 'Skip displaying "Get started" instructions')
+  .description('create a new project powered by vue-cli-service')//创建一个由vue-cli服务驱动的新项目
+  .option('-p, --preset <presetName>', 'Skip prompts and use saved or remote preset')//跳过提示并使用已保存或远程预设
+  .option('-d, --default', 'Skip prompts and use default preset')//跳过提示并使用默认预设
+  .option('-i, --inlinePreset <json>', 'Skip prompts and use inline JSON string as preset')//跳过提示并使用内联 JSON 字符串作为预设
+  .option('-m, --packageManager <command>', 'Use specified npm client when installing dependencies')//安装依赖项时使用指定的npm客户端
+  .option('-r, --registry <url>', 'Use specified npm registry when installing dependencies (only for npm)')//安装依赖项时使用指定的npm注册表（仅限npm）
+  .option('-g, --git [message]', 'Force git initialization with initial commit message')//强制git初始化与初始提交消息
+  .option('-n, --no-git', 'Skip git initialization')//跳过git初始化
+  .option('-f, --force', 'Overwrite target directory if it exists')//如果存在，则覆盖目标目录
+  .option('--merge', 'Merge target directory if it exists')//如果存在合并目标目录
+  .option('-c, --clone', 'Use git clone when fetching remote preset')//获取远程预设时使用 git 克隆
+  .option('-x, --proxy <proxyUrl>', 'Use specified proxy when creating project')//创建项目时使用指定代理
+  .option('-b, --bare', 'Scaffold project without beginner instructions')//没有初学者说明的脚手架项目
+  .option('--skipGetStarted', 'Skip displaying "Get started" instructions')//跳过显示"开始"说明
   .action((name, options) => {
     if (minimist(process.argv.slice(3))._.length > 1) {
+      //您提供了多个参数。第一个将用作应用程序的名称，其余的将被忽略。
       console.log(chalk.yellow('\n Info: You provided more than one argument. The first one will be used as the app\'s name, the rest are ignored.'))
     }
     // --git makes commander to default git to true
+    // 强制git初始化与初始提交消息 设置forceGit 为true
     if (process.argv.includes('-g') || process.argv.includes('--git')) {
       options.forceGit = true
     }
+    /*
+    options:{
+      preset,
+      default,
+      inlinePreset,
+      packageManager,
+      registry,
+      git,
+      no,
+      force,
+      merge,
+      clone,
+      proxy,
+      bare,
+      skipGetStarted,
+    }
+    */
     require('../lib/create')(name, options)
   })
 

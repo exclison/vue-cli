@@ -72,7 +72,7 @@ exports.defaultPreset = {
     }
   }
 }
-
+//默认选项
 exports.defaults = {
   lastChecked: undefined,
   latestVersion: undefined,
@@ -86,7 +86,7 @@ exports.defaults = {
 }
 
 let cachedOptions
-
+//加载配置项 (如果由缓存配置,从缓存(.vuerc文件)中获取,如果没有则返回空对象)
 exports.loadOptions = () => {
   if (cachedOptions) {
     return cachedOptions
