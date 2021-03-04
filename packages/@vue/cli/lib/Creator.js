@@ -57,6 +57,7 @@ module.exports = class Creator extends EventEmitter {
 
     this.presetPrompt = presetPrompt//预设提示
     this.featurePrompt = featurePrompt//功能提示
+    //加载另外的一些配置提示 (包管理器 Babel Eslint等)
     this.outroPrompts = this.resolveOutroPrompts()
     this.injectedPrompts = []
     this.promptCompleteCbs = []
@@ -288,10 +289,10 @@ module.exports = class Creator extends EventEmitter {
 
     generator.printExitLogs()
   }
-
+  //用于执行指令的函数 run('git clone https://www.github.com/exclison')
   run (command, args) {
     if (!args) { [command, ...args] = command.split(/\s+/) }
-    return execa(command, args, { cwd: this.context })
+    return execa(command, args, { cwd: this.context })//command:指令,cwd:子进程当前工作的目录
   }
 
   async promptAndResolvePreset (answers = null) {
@@ -452,29 +453,31 @@ module.exports = class Creator extends EventEmitter {
       featurePrompt
     }
   }
-
+  //加载另外的一些提示 包管理器 或者 Babel Eslint等
   resolveOutroPrompts () {
     const outroPrompts = [
       {
         name: 'useConfigFiles',
-        when: isManualMode,
+        when: isManualMode,//在手动模式
         type: 'list',
+        //你喜欢把Babel, ESLint等的配置放在哪里?
         message: 'Where do you prefer placing config for Babel, ESLint, etc.?',
         choices: [
           {
-            name: 'In dedicated config files',
+            name: 'In dedicated config files',//在专用配置文件中
             value: 'files'
           },
           {
-            name: 'In package.json',
+            name: 'In package.json',//在package.json
             value: 'pkg'
           }
         ]
       },
       {
         name: 'save',
-        when: isManualMode,
+        when: isManualMode,//手动模式
         type: 'confirm',
+        //将其保存为将来项目的预设值
         message: 'Save this as a preset for future projects?',
         default: false
       },
@@ -482,12 +485,13 @@ module.exports = class Creator extends EventEmitter {
         name: 'saveName',
         when: answers => answers.save,
         type: 'input',
-        message: 'Save preset as:'
+        message: 'Save preset as:'//保存预设为
       }
     ]
 
-    // ask for packageManager once
+    // ask for packageManager once   请求一次packageManager
     const savedOptions = loadOptions()
+    //获取包管理器的提示选项
     if (!savedOptions.packageManager && (hasYarn() || hasPnpm3OrLater())) {
       const packageManagerChoices = []
 
@@ -516,8 +520,9 @@ module.exports = class Creator extends EventEmitter {
       outroPrompts.push({
         name: 'packageManager',
         type: 'list',
+        //选择安装依赖项时要使用的包管理器
         message: 'Pick the package manager to use when installing dependencies:',
-        choices: packageManagerChoices
+        choices: packageManagerChoices//包管理器选项
       })
     }
 
